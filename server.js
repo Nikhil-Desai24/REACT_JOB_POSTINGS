@@ -4,29 +4,29 @@
 
 
 
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-
-const express = require('express');
-const jsonServer = require('json-server');
-const path = require('path');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Serve React frontend
-app.use(express.static(path.join(__dirname, 'dist'))); // Assuming your React build files are in "dist"
+// Serve static files from the dist folder
+app.use(express.static(path.join(__dirname, 'dist')));
 
-// JSON Server setup
-const apiRouter = jsonServer.router(path.join(__dirname, 'src', 'jobs.json')); // Path to jobs.json
-const middlewares = jsonServer.defaults();
-app.use('/api', middlewares, apiRouter);
-
-// Handle React routing, return index.html
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html')); // Adjust "dist" to your build folder
+// API Endpoint to serve JSON data
+app.get('/api/jobs', (req, res) => {
+  res.sendFile(path.join(__dirname, 'src', 'jobs.json'));
 });
 
-// Start the server
+// Catch-all route to serve the frontend
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
