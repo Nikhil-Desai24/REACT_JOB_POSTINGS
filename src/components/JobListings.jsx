@@ -11,22 +11,26 @@ const JobListings = ({ isHome = false }) => {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const apiURL = isHome
-        ? "/api/jobs?_limit=3"
-        : "/api/jobs";
+      const apiURL = isHome ? "/api/jobs?_limit=3" : "/api/jobs";
       try {
         const res = await fetch(apiURL);
         const data = await res.json();
-        // console.log(data);
-        setJob(data);
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setJob(data);
+        } else {
+          console.error("Fetched data is not an array:", data);
+          setJob([]); // Set to an empty array to prevent errors
+        }
       } catch (error) {
         console.log("Error fetching data", error);
       } finally {
         setLoading(false);
       }
     };
-  fetchJobs();
-  }, []);
+    fetchJobs();
+  }, [isHome]);
+  
 
   return (
     <section className="bg-blue-50 px-4 py-10">
